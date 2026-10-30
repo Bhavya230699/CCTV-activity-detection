@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dataset Management · AI Surveillance</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">AI SURVEILLANCE <span>STUDIO</span></a>
+    <nav>
+      <a href="/">Setup</a>
+      <a href="/video">Live monitoring</a>
+      <a href="/roi">ROI selection</a>
+      <a href="/dashboard">Alerts</a>
+      <a href="/results">Results</a>
+      <a class="active" href="/datasets">Datasets</a>
+      <a href="/models">Models</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="page-heading">
+      <h1>Training Datasets & Ground Truth</h1>
+      <p>Inspect real annotated YOLO datasets, generate starter samples, or download complete ZIP archives for local training.</p>
+    </section>
+
+    <div class="panel">
+      <div class="panel-heading">
+        <h2>Active Dataset Repositories</h2>
+        <a class="button primary" href="/api/datasets/download-zip/all">Download All Datasets (.ZIP)</a>
+      </div>
+      <div id="datasetCards" class="grid-3">
+        <p>Loading dataset summaries...</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-heading">
+        <h2>Dataset Quick-Start Utility</h2>
+      </div>
+      <p style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">
+        Generate starter validation sets with correct YOLO formatting and class indices so you can test model training immediately:
+      </p>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <button class="button quiet" onclick="createSample('weapons')">Create Weapons Sample</button>
+        <button class="button quiet" onclick="createSample('dangerous_animals')">Create Dangerous Animals Sample</button>
+        <button class="button quiet" onclick="createSample('fire_smoke')">Create Fire & Smoke Sample</button>
+      </div>
+      <div id="genMsg" style="margin-top:15px; font-size:12px; color:var(--success);"></div>
+    </div>
+  </main>
+
+  <script>
+    async function loadSummary() {
+      const res = await fetch('/api/datasets/summary');
+      const data = await res.json();
+      const container = document.getElementById('datasetCards');
+      container.innerHTML = '';
+
+      for (const [key, item] of Object.entries(data)) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <h3>${item.name}</h3>
+            <span class="badge ${item.ready_for_training ? 'success' : 'warning'}">${item.ready_for_training ? 'Ready' : 'Pending Data'}</span>
+          </div>
+          <p>${item.description}</p>
+          <div style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:12px;">
+            <div>Classes: <strong>${item.classes.join(', ')}</strong></div>
+            <div>Total Images: <strong>${item.total_images}</strong> (Train: ${item.splits.train}, Val: ${item.splits.val}, Test: ${item.splits.test})</div>
+            <div>License: ${item.license}</div>
+          </div>
+          <a class="button quiet" style="width:100%; text-align:center;" href="/api/datasets/download-zip/${key}">Download ${item.name} (.ZIP)</a>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    async function createSample(cat) {
+      document.getElementById('genMsg').innerText = `Generating samples for ${cat}...`;
+      const res = await fetch('/api/datasets/create-sample', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ category: cat })
+      });
+      const data = await res.json();
+      document.getElementById('genMsg').innerText = `Successfully created ${data.samples_created} validated samples for ${cat}!`;
+      loadSummary();
+    }
+
+    loadSummary();
+  </script>
+</body>
+</html>

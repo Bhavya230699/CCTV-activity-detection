@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Analysis Results · AI Surveillance</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    /* Force hidden class to always win */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Emergency Alert Pop-up Overlay (Default is hidden) */
+    .emergency-modal-overlay {
+      position: fixed; 
+      inset: 0; 
+      background: rgba(0, 0, 0, 0.90);
+      display: none; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 99999;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    
+    .emergency-modal-overlay.active {
+      display: flex !important;
+    }
+
+    .emergency-modal {
+      background: #0f172a; 
+      border: 3px solid #ef4444; 
+      border-radius: 14px;
+      max-width: 540px; 
+      width: 92%; 
+      padding: 28px; 
+      text-align: center;
+      box-shadow: 0 0 60px rgba(239, 68, 68, 0.7);
+      animation: pulseBorder 1.2s infinite alternate;
+    }
+    
+    @keyframes pulseBorder {
+      0% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.4); border-color: #ef4444; }
+      100% { box-shadow: 0 0 70px rgba(239, 68, 68, 0.95); border-color: #f87171; }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .hazard-banner {
+      background: rgba(239, 68, 68, 0.18); 
+      border: 2px solid #ef4444;
+      border-radius: 8px; 
+      padding: 14px 20px; 
+      margin-bottom: 20px;
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+    }
+  </style>
+</head>
+<body data-page="results">
+  <header class="topbar">
+    <a class="brand" href="/">AI SURVEILLANCE <span>STUDIO</span></a>
+    <nav>
+      <a href="/">Setup</a>
+      <a href="/video">Live monitoring</a>
+      <a href="/roi">ROI selection</a>
+      <a href="/dashboard">Alerts</a>
+      <a class="active" href="/results">Results</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <!-- Hazard Banner (Appears if any danger was detected in the video) -->
+    <div id="hazardAlertBanner" class="hazard-banner hidden">
+      <div>
+        <strong id="hazardBannerText" style="color:#ef4444; font-size:14px;">🚨 Hazard Detected During Video Processing!</strong>
+        <p style="color:#cbd5e1; font-size:12px; margin-top:4px;">Threats identified: evidence snapshots and incident logs were generated.</p>
+      </div>
+      <a class="button danger" href="/dashboard">Open Alerts Dashboard →</a>
+    </div>
+
+    <section class="page-heading">
+      <h1>Analysis Results & Intelligence Exports</h1>
+      <p>Review the processed surveillance footage, extracted event clips, frame sequences, analytics graphs, and data files.</p>
+    </section>
+
+    <!-- Top Summary Banner -->
+    <div class="panel">
+      <div class="panel-heading">
+        <div>
+          <h2 id="resultFilename">Loading analysis...</h2>
+          <span class="badge warning" id="resultState">Processing</span>
+        </div>
+        <a class="button primary hidden" id="downloadAll" href="#">Download All Results (.ZIP)</a>
+      </div>
+
+      <!-- Main Processed Video -->
+      <div class="panel hidden" id="processedPanel" style="background:#080c14; padding:15px; margin-top:15px;">
+        <h3 style="margin-bottom:10px; font-size:15px;">Full Annotated Surveillance Footage</h3>
+        <video id="processedVideo" controls style="width:100%; max-height:460px; border-radius:6px;"></video>
+      </div>
+
+      <!-- Extracted Event Video Clips -->
+      <div class="panel hidden" id="eventVideosPanel" style="margin-top:20px;">
+        <h3>Extracted Motion Event Video Clips</h3>
+        <p style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Pre-buffered video clips recorded only when movement occurred.</p>
+        <div id="eventClipsGrid" class="grid-3"></div>
+      </div>
+
+      <!-- Extracted Event Frames -->
+      <div class="panel hidden" id="eventFramesPanel" style="margin-top:20px;">
+        <h3>Activity-Aware Frame Extractions</h3>
+        <p style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Key snapshot frames captured during detected activity.</p>
+        <div id="eventFramesGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px;"></div>
+      </div>
+
+      <!-- Generated Analytics Graphs -->
+      <div class="panel hidden" id="graphsPanel" style="margin-top:20px;">
+        <h3>Generated Intelligence Graphs</h3>
+        <div id="graphsGrid" style="display:flex; gap:16px; flex-wrap:wrap; margin-top:12px;"></div>
+      </div>
+
+      <!-- Data CSV Downloads -->
+      <div class="panel hidden" id="datasetPanel" style="margin-top:20px;">
+        <h3>CSV Data Exports</h3>
+        <p style="color:var(--text-muted); font-size:12px; margin-bottom:12px;">Complete coordinate, velocity, and detection logs.</p>
+        <div id="csvLinks" style="display:flex; gap:12px; flex-wrap:wrap;"></div>
+      </div>
+    </div>
+
+    <!-- EMERGENCY ALERT POP-UP MODAL -->
+    <div id="resultsAlertModal" class="emergency-modal-overlay hidden">
+      <div class="emergency-modal">
+        <div style="font-size:36px; margin-bottom:10px;">🚨</div>
+        <h2 id="modalAlertTitle" style="color:#ef4444; font-size:22px; margin-bottom:8px;">HAZARD DETECTED IN FOOTAGE</h2>
+        <p id="modalAlertMessage" style="color:#f1f5f9; font-size:15px; font-weight:700; margin-bottom:6px;"></p>
+        <p id="modalAlertMeta" style="color:#94a3b8; font-size:11px; font-family:var(--font-mono); margin-bottom:14px;"></p>
+        
+        <div style="margin-bottom:18px;">
+          <img id="modalAlertSnapshot" src="" style="width:100%; max-height:260px; object-fit:contain; border-radius:8px; background:#000; border:1px solid #ef4444;" alt="Evidence Snapshot">
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+          <a class="button danger" href="/dashboard" style="text-decoration:none; font-size:13px; padding:10px 20px;">🚨 Review in Alerts Dashboard →</a>
+          <button class="button quiet" id="silenceBtn" onclick="dismissResultsModal()">Silence Siren & View Results</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

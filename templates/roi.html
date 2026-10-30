@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ROI Polygon Selection · AI Surveillance</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body data-page="roi">
+  <header class="topbar">
+    <a class="brand" href="/">AI SURVEILLANCE <span>STUDIO</span></a>
+    <nav>
+      <a href="/">Setup</a>
+      <a href="/video">Live monitoring</a>
+      <a class="active" href="/roi">ROI selection</a>
+      <a href="/dashboard">Alerts</a>
+      <a href="/results">Results</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="page-heading">
+      <h1>Region of Interest (ROI) Polygon Editor</h1>
+      <p>Scrub your video to any frame, pause, and click points directly on the image to outline a boundary. Click Save to apply and return to Setup.</p>
+    </section>
+
+    <div class="panel">
+      <!-- Toolbar -->
+      <div style="display:flex; gap:12px; margin-bottom:14px; align-items:center; flex-wrap:wrap;">
+        <button class="button quiet" id="roiPlayPause">Pause / Play</button>
+        <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-muted);">
+          Scrub Video:
+          <input type="range" id="roiSeek" min="0" max="100" value="0" style="width:200px;">
+        </label>
+        <button class="button quiet" id="undoPoint">Undo Point</button>
+        <button class="button quiet" id="clearRoi">Clear Polygon</button>
+        <button class="button primary" id="savePolygon">Save & Return to Setup →</button>
+      </div>
+
+      <!-- Video & Overlaid Canvas Stage -->
+      <div id="roiStage" style="position:relative; width:100%; max-height:560px; background:#000; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+        <video id="roiVideo" preload="auto" style="max-width:100%; max-height:560px; display:block;"></video>
+        <canvas id="roiCanvas" style="position:absolute; cursor:crosshair;"></canvas>
+        <div id="roiEmpty" style="position:absolute; color:var(--text-muted); font-size:13px; text-align:center; padding:20px;">
+          No video loaded yet.<br>
+          <a href="/" style="color:var(--accent-primary); font-weight:700;">Upload a video on the Setup page</a>, then return here to draw your zone.
+        </div>
+      </div>
+      <p style="color:var(--text-muted); font-size:11px; margin-top:10px;">
+        Points are saved as normalized fractions (0.0 to 1.0). Coordinates automatically align with any video resolution.
+      </p>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

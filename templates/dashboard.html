@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Emergency Alerts · AI Surveillance</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body data-page="alerts">
+  <header class="topbar">
+    <a class="brand" href="/">AI SURVEILLANCE <span>STUDIO</span></a>
+    <nav>
+      <a href="/">Setup</a>
+      <a href="/video">Live monitoring</a>
+      <a href="/roi">ROI selection</a>
+      <a class="active" href="/dashboard">Alerts</a>
+      <a href="/results">Results</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="page-heading">
+      <h1>Emergency Surveillance Alerts</h1>
+      <p>Real-time hazard monitoring with audio alarms and evidence verification.</p>
+    </section>
+
+    <!-- Alert Controls Bar: Audio & Push Notifications -->
+    <div class="panel" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
+      <div style="display:flex; gap:12px; align-items:center;">
+        <button class="button primary" id="soundToggleBtn" onclick="toggleAudioAlerts()">🔊 Sound Alarms: ON</button>
+    
+      </div>
+      <div>
+        <a class="button quiet" href="/api/alerts/export.csv">Export Alerts CSV</a>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-heading">
+        <h2>Recorded Incidents (<span id="alertCount">0</span>)</h2>
+        <button class="button quiet" onclick="loadAlerts()">Refresh Board</button>
+      </div>
+      <div id="alertList">
+        <p class="muted">Loading alerts...</p>
+      </div>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

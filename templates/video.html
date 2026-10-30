@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Live Camera Monitoring · AI Surveillance</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body data-page="live">
+  <header class="topbar">
+    <a class="brand" href="/">AI SURVEILLANCE <span>STUDIO</span></a>
+    <nav>
+      <a href="/">Setup</a>
+      <a class="active" href="/video">Live monitoring</a>
+      <a href="/roi">ROI selection</a>
+      <a href="/dashboard">Alerts</a>
+      <a href="/results">Results</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="page-heading">
+      <h1>Real-Time Camera Surveillance</h1>
+      <p>Connect an accessible RTSP/HTTP camera or mobile camera app (such as IP Webcam) over your local network.</p>
+    </section>
+
+    <div class="panel">
+      <form id="liveForm" style="display:grid; grid-template-columns:1fr 200px auto auto; gap:12px; align-items:end;">
+        <div>
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Camera Stream URL (RTSP / HTTP)</label>
+          <input type="text" id="streamUrl" placeholder="rtsp://192.168.1.15:554/stream1" required style="width:100%; height:38px; background:#0f172a; color:#fff; border:1px solid var(--border); border-radius:6px; padding:0 10px;">
+        </div>
+        <div>
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Camera Label</label>
+          <input type="text" id="sourceName" value="Gate Camera" style="width:100%; height:38px; background:#0f172a; color:#fff; border:1px solid var(--border); border-radius:6px; padding:0 10px;">
+        </div>
+        <button type="submit" class="button primary">Start Monitoring</button>
+        <button type="button" id="stopLive" class="button danger" disabled>Stop</button>
+      </form>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1.6fr 1fr; gap:20px;">
+      <div class="panel">
+        <div style="width:100%; height:400px; background:#000; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+          <img id="liveFeed" class="hidden" style="width:100%; height:100%; object-fit:contain;" alt="Live camera feed">
+          <div id="feedPlaceholder" style="color:var(--text-muted); font-size:13px;">Stream preview appears here when connected.</div>
+        </div>
+        <div style="display:flex; justify-content:space-around; margin-top:16px; font-family:var(--font-mono); font-size:12px;">
+          <div>Source FPS: <strong id="sourceFps">—</strong></div>
+          <div>Processing FPS: <strong id="processingFps">—</strong></div>
+          <div>Active Detections: <strong id="detectionCount">0</strong></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading"><h2>Active Danger Watch</h2></div>
+        <p style="color:var(--text-muted); font-size:12px; line-height:1.6;">
+          When firearms, blades, snakes, predators, or fire hazards are identified, instant evidence captures and emergency events appear on the <strong>Alerts</strong> board.
+        </p>
+      </div>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

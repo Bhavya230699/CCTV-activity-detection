@@ -1,0 +1,18 @@
+# Python virtual environments
+venv/
+env/
+__pycache__/
+
+# Large datasets and videos
+*.mp4
+*.avi
+*.mov
+datasets/
+data/
+
+# Model weights and logs
+*.h5
+*.pt
+*.weights
+runs/
+logs/

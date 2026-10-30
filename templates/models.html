@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Model Registry & Training · AI Surveillance</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">AI SURVEILLANCE <span>STUDIO</span></a>
+    <nav>
+      <a href="/">Setup</a>
+      <a href="/video">Live monitoring</a>
+      <a href="/roi">ROI selection</a>
+      <a href="/dashboard">Alerts</a>
+      <a href="/results">Results</a>
+      <a href="/datasets">Datasets</a>
+      <a class="active" href="/models">Models</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="page-heading">
+      <h1>Specialist Danger Detection Models</h1>
+      <p>Manage model weights, inspect target classes, and launch fine-tuning jobs on local hardware.</p>
+    </section>
+
+    <div class="panel">
+      <div class="panel-heading">
+        <h2>Surveillance Model Registry</h2>
+      </div>
+      <div id="modelsGrid" class="grid-3">
+        <p>Loading model capabilities...</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function loadModels() {
+      const res = await fetch('/api/models/status');
+      const data = await res.json();
+      const container = document.getElementById('modelsGrid');
+      container.innerHTML = '';
+
+      for (const [key, item] of Object.entries(data)) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const isActive = item.status === 'active';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <h3>${item.name || key.toUpperCase()}</h3>
+            <span class="badge ${isActive ? 'success' : 'warning'}">${item.status}</span>
+          </div>
+          <p>${item.note || 'Trained checkpoint ready for live inference.'}</p>
+          <div style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:14px;">
+            <div>Supported Classes: <strong>${(item.classes || item.target_classes || []).join(', ')}</strong></div>
+            <div>Checkpoint: ${item.path || 'Pending (yolov8n baseline)'}</div>
+          </div>
+          <button class="button primary" style="width:100%;" onclick="trainModel('${key}')">${isActive ? 'Re-Train Model' : 'Train Model Now'}</button>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    async function trainModel(key) {
+      if (!confirm(`Start training specialist model for ${key}?`)) return;
+      const res = await fetch('/api/models/train', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ category: key, epochs: 15 })
+      });
+      const data = await res.json();
+      alert(data.message);
+      loadModels();
+    }
+
+    loadModels();
+  </script>
+</body>
+</html>

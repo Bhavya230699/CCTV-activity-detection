@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Setup & Video Analysis · AI Surveillance</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body data-page="home">
+  <header class="topbar">
+    <a class="brand" href="/">AI SURVEILLANCE <span>STUDIO</span></a>
+    <nav>
+      <a class="active" href="/">Setup</a>
+      <a href="/video">Live monitoring</a>
+      <a href="/roi">ROI selection</a>
+      <a href="/dashboard">Alerts</a>
+      <a href="/results">Results</a>
+    </nav>
+  </header>
+
+  <main class="shell">
+    <section class="page-heading">
+      <h1>CCTV Video Activity & Danger Analysis</h1>
+      <p>Upload surveillance footage to run multi-model object detection, track movements, monitor restricted zones, and trigger hazard alerts.</p>
+    </section>
+
+    <div class="panel">
+      <div class="panel-heading">
+        <h2>Upload Video Footage</h2>
+        <span class="badge warning" id="uploadState">No Video Loaded</span>
+      </div>
+      <div style="display:flex; gap:16px; align-items:center; margin-bottom:16px;">
+        <input type="file" id="videoFile" accept=".mp4,.avi,.mov,.mkv,.webm" style="color:var(--text-muted); font-size:12px;">
+        <span id="selectedFilename" style="color:var(--text-muted); font-size:12px;">No file selected</span>
+        <button class="button primary" id="uploadButton">Upload video</button>
+      </div>
+
+      <div id="uploadMessage" class="notice hidden"></div>
+
+      <div id="previewWrap" class="hidden" style="margin-top:20px;">
+        <video id="sourcePreview" controls style="width:100%; max-height:420px; border-radius:8px; background:#000;"></video>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:18px; margin-top:24px;">
+        <div>
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Processing Mode</label>
+          <select id="analysisSpeed" style="width:100%; height:38px; background:#0f172a; color:#fff; border:1px solid var(--border); border-radius:6px; padding:0 10px;">
+            <option value="normal" selected>Normal (Stride 2)</option>
+            <option value="slow">Slow (Every Frame)</option>
+            <option value="fast">Fast (Stride 4)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Monitored Zone</label>
+          <select id="analysisArea" style="width:100%; height:38px; background:#0f172a; color:#fff; border:1px solid var(--border); border-radius:6px; padding:0 10px;">
+            <option value="full" selected>Full Frame</option>
+            <option value="region">Saved ROI Polygon Only</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Event Extractions</label>
+          <select id="extractionMode" style="width:100%; height:38px; background:#0f172a; color:#fff; border:1px solid var(--border); border-radius:6px; padding:0 10px;">
+            <option value="both" selected>Clips & Frames</option>
+            <option value="videos">Clips Only</option>
+            <option value="frames">Frames Only</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px; font-weight:700; color:var(--text-muted);">Confidence Cutoff</label>
+          <input type="range" id="confidenceThreshold" min="0.1" max="0.9" step="0.05" value="0.40" style="width:100%; margin-top:10px;">
+        </div>
+      </div>
+
+      <div style="margin-top:24px; display:flex; gap:14px; align-items:center;">
+        <button class="button primary" id="startAnalysis" disabled>Start Video Analysis</button>
+        <a class="button quiet" href="/roi">Edit ROI Polygon →</a>
+      </div>
+
+      <div id="progressArea" class="hidden" style="margin-top:24px;">
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px;">
+          <span>Processing video...</span>
+          <span id="progressPercent" style="font-family:var(--font-mono); color:var(--accent-primary);">0%</span>
+        </div>
+        <div style="height:8px; background:#1e293b; border-radius:99px; overflow:hidden;">
+          <div id="progressBar" style="height:100%; width:0%; background:var(--accent-primary); transition:0.2s;"></div>
+        </div>
+        <p id="progressInfo" style="font-size:11px; color:var(--text-muted); margin-top:8px;"></p>
+      </div>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
