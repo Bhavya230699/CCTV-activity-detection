@@ -38,3 +38,9 @@ Due to GitHub's file size limits, the training and validation dataset is hosted 
 
 &#x20;  pip install -r requirements.txt
 
+Download and place the dataset inside a datasets/ folder in the project root.
+
+Start the application:
+
+Bash
+python app.py
